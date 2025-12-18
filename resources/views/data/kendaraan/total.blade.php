@@ -1,292 +1,167 @@
 @extends('layouts.main')
 
-@section('page-title', 'Data Kendaraan')
+@section('page-title', 'Total Kendaraan')
+@section('page-description', 'Daftar semua kendaraan dalam database')
 
 @section('page-content')
-<!-- Title and Actions -->
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h2 style="font-size: 18px; font-weight: 700; color: #1e293b; margin: 0;">Total Kendaraan</h2>
-    <div style="display: flex; gap: 10px;">
-        <button onclick="openModal()" style="padding: 10px 16px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-            <i class="fas fa-plus"></i> Tambah Baru
-        </button>
-        <a href="{{ route('kendaraan.total.export') }}" style="padding: 10px 16px; background: white; color: #2563eb; border: 2px solid #2563eb; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;" onmouseover="this.style.backgroundColor='#f0f4f8'" onmouseout="this.style.backgroundColor='white'">
-            <i class="fas fa-download"></i> Export Excel
-        </a>
-    </div>
-</div>
-
-<!-- Table -->
-<div style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); overflow: hidden;">
-    <table style="width: 100%; border-collapse: collapse;">
-        <thead>
-            <tr style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white;">
-                <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; border-right: 1px solid rgba(255,255,255,0.1);">No</th>
-                <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; border-right: 1px solid rgba(255,255,255,0.1);">No Lambung</th>
-                <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; border-right: 1px solid rgba(255,255,255,0.1);">Tipe Unit</th>
-                <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; border-right: 1px solid rgba(255,255,255,0.1);">Register Number</th>
-                <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; border-right: 1px solid rgba(255,255,255,0.1);">Status</th>
-                <th style="padding: 16px; text-align: center; font-size: 13px; font-weight: 600;">Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($kendaraan as $item)
-            <tr style="border-bottom: 1px solid #e2e8f0; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='white'">
-                <td style="padding: 16px; font-size: 13px; color: #334155; border-right: 1px solid #e2e8f0;">{{ $loop->iteration }}</td>
-                <td style="padding: 16px; font-size: 13px; color: #334155; border-right: 1px solid #e2e8f0;">{{ $item->no_lambung }}</td>
-                <td style="padding: 16px; font-size: 13px; color: #334155; border-right: 1px solid #e2e8f0;">{{ $item->tipe_unit }}</td>
-                <td style="padding: 16px; font-size: 13px; color: #334155; border-right: 1px solid #e2e8f0;">{{ $item->register_number }}</td>
-                <td style="padding: 16px; border-right: 1px solid #e2e8f0;">
-                    @if($item->status_komisioning === 'aktif')
-                        <span style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 4px; font-weight: 600; font-size: 12px;">Aktif</span>
-                    @elseif($item->status_komisioning === 'tidak_aktif')
-                        <span style="background: #fee2e2; color: #991b1b; padding: 4px 12px; border-radius: 4px; font-weight: 600; font-size: 12px;">Tidak Aktif</span>
-                    @else
-                        <span style="background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 4px; font-weight: 600; font-size: 12px;">Maintenance</span>
-                    @endif
-                </td>
-                <td style="padding: 16px; text-align: center;">
-                    <button onclick="openEditModal({{ $item->id }})" style="background: none; border: none; color: #2563eb; cursor: pointer; font-size: 16px; margin-right: 12px; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <form method="POST" action="{{ route('kendaraan.total.destroy', $item->id) }}" style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus data ini?');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" style="background: none; border: none; color: #dc2626; cursor: pointer; font-size: 16px; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            @empty
-            <tr style="border-bottom: 1px solid #e2e8f0;">
-                <td colspan="6" style="padding: 16px; text-align: center; color: #94a3b8; font-size: 13px;">Tidak ada data kendaraan</td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
-</div>
-
-<!-- Pagination -->
-<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 0 20px;">
-    <div style="font-size: 13px; color: #64748b;">Total: {{ $kendaraan->total() }} data</div>
-    <div style="display: flex; gap: 10px; align-items: center;">
-        @if($kendaraan->onFirstPage())
-            <button disabled style="padding: 6px 12px; background: #f0f4f8; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; cursor: not-allowed; color: #cbd5e1;">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-        @else
-            <a href="{{ $kendaraan->previousPageUrl() }}" style="padding: 6px 12px; background: white; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.3s ease; text-decoration: none; color: #334155;" onmouseover="this.style.backgroundColor='#f0f4f8'" onmouseout="this.style.backgroundColor='white'">
-                <i class="fas fa-chevron-left"></i>
+<div class="bg-white rounded-xl shadow-sm">
+    <!-- Header -->
+    <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="{{ route('dashboard') }}" class="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-200">
+                    <i class="fas fa-arrow-left text-gray-600"></i>
+                </a>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">Total Kendaraan</h2>
+                    <p class="text-sm text-gray-500 mt-1">Manage all vehicle data</p>
+                </div>
+            </div>
+            <a href="{{ route('kendaraan.create') }}" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-medium hover:shadow-lg transition-all duration-200 flex items-center gap-2">
+                <i class="fas fa-plus"></i>
+                <span>Add New Vehicle</span>
             </a>
-        @endif
-        <span style="font-size: 13px; color: #334155; font-weight: 600;">{{ $kendaraan->currentPage() }} / {{ $kendaraan->lastPage() }}</span>
-        @if($kendaraan->hasMorePages())
-            <a href="{{ $kendaraan->nextPageUrl() }}" style="padding: 6px 12px; background: white; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.3s ease; text-decoration: none; color: #334155;" onmouseover="this.style.backgroundColor='#f0f4f8'" onmouseout="this.style.backgroundColor='white'">
-                <i class="fas fa-chevron-right"></i>
-            </a>
-        @else
-            <button disabled style="padding: 6px 12px; background: #f0f4f8; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; cursor: not-allowed; color: #cbd5e1;">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-        @endif
-    </div>
-</div>
-
-<!-- Add Modal -->
-<div id="formModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center; flex-direction: column;">
-    <div style="background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; animation: slideIn 0.3s ease;">
-        <!-- Modal Header -->
-        <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 24px; color: white; display: flex; justify-content: space-between; align-items: center; border-radius: 12px 12px 0 0;">
-            <h2 style="font-size: 18px; font-weight: 700; margin: 0;">Tambah Data Kendaraan</h2>
-            <button onclick="closeModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-
-        <!-- Modal Body -->
-        <div style="padding: 30px;">
-            <form method="POST" action="{{ route('kendaraan.total.store') }}" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                @csrf
-
-                <div>
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">No Lambung</label>
-                    <input type="text" name="no_lambung" placeholder="Masukkan No Lambung" style="width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;" required>
-                </div>
-
-                <div>
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">Tipe Unit</label>
-                    <input type="text" name="tipe_unit" placeholder="Masukkan Tipe Unit" style="width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;" required>
-                </div>
-
-                <div>
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">Register Number</label>
-                    <input type="text" name="register_number" placeholder="Masukkan Register Number" style="width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;" required>
-                </div>
-
-                <div style="grid-column: 1 / -1;">
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">Status Komisioning</label>
-                    <select name="status_komisioning" style="width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;" required>
-                        <option value="">Pilih Status</option>
-                        <option value="aktif">Aktif</option>
-                        <option value="tidak_aktif">Tidak Aktif</option>
-                        <option value="maintenance">Maintenance</option>
-                    </select>
-                </div>
-
-                <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
-                    <button type="button" onclick="closeModal()" style="padding: 10px 24px; background: white; color: #2563eb; border: 2px solid #2563eb; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f0f4f8'" onmouseout="this.style.backgroundColor='white'">
-                        Batal
-                    </button>
-                    <button type="submit" style="padding: 10px 24px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); display: flex; align-items: center; gap: 6px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(37, 99, 235, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(37, 99, 235, 0.3)'">
-                        <i class="fas fa-plus"></i> Tambah
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
-</div>
 
-<!-- Edit Modal -->
-<div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center; flex-direction: column;">
-    <div style="background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; animation: slideIn 0.3s ease;">
-        <!-- Modal Header -->
-        <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 24px; color: white; display: flex; justify-content: space-between; align-items: center; border-radius: 12px 12px 0 0;">
-            <h2 style="font-size: 18px; font-weight: 700; margin: 0;">Edit Data Kendaraan</h2>
-            <button onclick="closeEditModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-
-        <!-- Modal Body -->
-        <div style="padding: 30px;">
-            <form id="editForm" method="POST" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                @csrf
-                @method('PUT')
-
-                <div>
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">No Lambung</label>
-                    <input type="text" id="editNoLambung" name="no_lambung" placeholder="Masukkan No Lambung" style="width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;" required>
-                </div>
-
-                <div>
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">Tipe Unit</label>
-                    <input type="text" id="editTipeUnit" name="tipe_unit" placeholder="Masukkan Tipe Unit" style="width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;" required>
-                </div>
-
-                <div>
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">Register Number</label>
-                    <input type="text" id="editRegisterNumber" name="register_number" placeholder="Masukkan Register Number" style="width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;" required>
-                </div>
-
-                <div style="grid-column: 1 / -1;">
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">Status Komisioning</label>
-                    <select id="editStatus" name="status_komisioning" style="width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;" required>
-                        <option value="">Pilih Status</option>
-                        <option value="aktif">Aktif</option>
-                        <option value="tidak_aktif">Tidak Aktif</option>
-                        <option value="maintenance">Maintenance</option>
-                    </select>
-                </div>
-
-                <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
-                    <button type="button" onclick="closeEditModal()" style="padding: 10px 24px; background: white; color: #2563eb; border: 2px solid #2563eb; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f0f4f8'" onmouseout="this.style.backgroundColor='white'">
-                        Batal
-                    </button>
-                    <button type="submit" style="padding: 10px 24px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); display: flex; align-items: center; gap: 6px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(37, 99, 235, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(37, 99, 235, 0.3)'">
-                        <i class="fas fa-pencil"></i> Edit
-                    </button>
-                </div>
-            </form>
+    <!-- Filters -->
+    <div class="p-6 border-b border-gray-200 bg-gray-50">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+                <input type="text" placeholder="Search vehicles..." class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+            </div>
+            <div>
+                <select class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                    <option>All Types</option>
+                    <option>Mobil</option>
+                    <option>Motor</option>
+                    <option>Truk</option>
+                </select>
+            </div>
+            <div>
+                <select class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                    <option>All Status</option>
+                    <option>Aktif</option>
+                    <option>Breakdown</option>
+                    <option>Maintenance</option>
+                </select>
+            </div>
+            <div>
+                <button class="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-sm font-medium flex items-center justify-center gap-2">
+                    <i class="fas fa-filter"></i>
+                    <span>Apply Filters</span>
+                </button>
+            </div>
         </div>
     </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-50">
+                <tr class="border-b border-gray-200">
+                    <th class="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider py-4 px-6">
+                        <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                    </th>
+                    <th class="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider py-4 px-6">No. Polisi</th>
+                    <th class="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider py-4 px-6">Merk/Type</th>
+                    <th class="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider py-4 px-6">Tahun</th>
+                    <th class="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider py-4 px-6">Warna</th>
+                    <th class="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider py-4 px-6">Status</th>
+                    <th class="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider py-4 px-6">User</th>
+                    <th class="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider py-4 px-6">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                @forelse($kendaraan ?? [] as $item)
+                <tr class="hover:bg-gray-50 transition-colors duration-200">
+                    <td class="py-4 px-6">
+                        <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-car text-blue-600"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-semibold text-gray-800">{{ $item->no_polisi }}</div>
+                                <div class="text-xs text-gray-500">{{ $item->jenis_kendaraan }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 text-sm text-gray-800">{{ $item->merk }} {{ $item->type }}</td>
+                    <td class="py-4 px-6 text-sm text-gray-600">{{ $item->tahun }}</td>
+                    <td class="py-4 px-6">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            {{ $item->warna }}
+                        </span>
+                    </td>
+                    <td class="py-4 px-6">
+                        @if($item->status == 'Aktif')
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <i class="fas fa-circle text-xs mr-1.5"></i>
+                            Aktif
+                        </span>
+                        @elseif($item->status == 'Breakdown')
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            <i class="fas fa-circle text-xs mr-1.5"></i>
+                            Breakdown
+                        </span>
+                        @else
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            <i class="fas fa-circle text-xs mr-1.5"></i>
+                            Maintenance
+                        </span>
+                        @endif
+                    </td>
+                    <td class="py-4 px-6 text-sm text-gray-600">{{ $item->user }}</td>
+                    <td class="py-4 px-6">
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('kendaraan.show', $item->id) }}" class="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors duration-200">
+                                <i class="fas fa-eye text-sm"></i>
+                            </a>
+                            <a href="{{ route('kendaraan.edit', $item->id) }}" class="w-8 h-8 flex items-center justify-center rounded-lg bg-green-50 text-green-600 hover:bg-green-100 transition-colors duration-200">
+                                <i class="fas fa-edit text-sm"></i>
+                            </a>
+                            <form action="{{ route('kendaraan.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this vehicle?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors duration-200">
+                                    <i class="fas fa-trash text-sm"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="8" class="py-12 text-center">
+                        <i class="fas fa-car text-gray-300 text-5xl mb-4"></i>
+                        <p class="text-gray-500 font-medium">No vehicles found</p>
+                        <p class="text-sm text-gray-400 mt-2">Start by adding your first vehicle</p>
+                        <a href="{{ route('kendaraan.create') }}" class="inline-flex items-center gap-2 px-6 py-2.5 mt-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                            <i class="fas fa-plus"></i>
+                            <span>Add Vehicle</span>
+                        </a>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    @if(isset($kendaraan) && $kendaraan->hasPages())
+    <div class="p-6 border-t border-gray-200">
+        <div class="flex items-center justify-between">
+            <div class="text-sm text-gray-600">
+                Showing {{ $kendaraan->firstItem() }} to {{ $kendaraan->lastItem() }} of {{ $kendaraan->total() }} results
+            </div>
+            <div class="flex gap-2">
+                {{ $kendaraan->links() }}
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
-
-<style>
-    @keyframes slideIn {
-        from {
-            transform: translateY(-50px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-</style>
-
-<script>
-function openModal() {
-    const modal = document.getElementById('formModal');
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-}
-
-function closeModal() {
-    const modal = document.getElementById('formModal');
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto';
-}
-
-function openEditModal(id) {
-    const modal = document.getElementById('editModal');
-    const form = document.getElementById('editForm');
-
-    // Fetch data from server
-    fetch(`/data/kendaraan/total/${id}`, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('editNoLambung').value = data.no_lambung;
-        document.getElementById('editTipeUnit').value = data.tipe_unit;
-        document.getElementById('editRegisterNumber').value = data.register_number;
-        document.getElementById('editStatus').value = data.status_komisioning;
-        form.action = `/data/kendaraan/total/${id}`;
-
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    })
-    .catch(error => console.error('Error:', error));
-}
-
-function closeEditModal() {
-    const modal = document.getElementById('editModal');
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto';
-}
-
-// Close modals when clicking outside
-document.addEventListener('DOMContentLoaded', function() {
-    const addModal = document.getElementById('formModal');
-    const editModal = document.getElementById('editModal');
-
-    if (addModal) {
-        addModal.addEventListener('click', function(e) {
-            if (e.target === addModal) {
-                closeModal();
-            }
-        });
-    }
-
-    if (editModal) {
-        editModal.addEventListener('click', function(e) {
-            if (e.target === editModal) {
-                closeEditModal();
-            }
-        });
-    }
-});
-
-// Close modals on Escape key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeModal();
-        closeEditModal();
-    }
-});
-</script>
 @endsection

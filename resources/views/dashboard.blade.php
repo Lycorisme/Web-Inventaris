@@ -1,294 +1,402 @@
 @extends('layouts.main')
 
 @section('page-title', 'Dashboard')
+@section('page-description', 'Overview sistem monitoring general affair')
 
 @section('page-content')
-<!-- User Profile Section -->
-<div style="margin-bottom: 30px;">
-    <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
-            <h2 style="font-size: 16px; font-weight: 700; color: #1e293b; margin: 0;">Profil Admin</h2>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="openEditProfileModal()" style="padding: 8px 16px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                    <i class="fas fa-edit"></i> Edit Profil
-                </button>
-                <button onclick="openChangePasswordModal()" style="padding: 8px 16px; background: white; color: #2563eb; border: 2px solid #2563eb; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.backgroundColor='#f0f4f8'" onmouseout="this.style.backgroundColor='white'">
-                    <i class="fas fa-key"></i> Ubah Password
-                </button>
-            </div>
+<!-- Welcome Banner -->
+<div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-lg p-8 mb-6 text-white">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold mb-2">Selamat Datang, {{ Auth::user()->name }}! 👋</h1>
+            <p class="text-blue-100">Berikut adalah ringkasan data sistem monitoring general affair Anda</p>
         </div>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
-            <div>
-                <div style="font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 6px;">Nama</div>
-                <div style="font-size: 14px; color: #1e293b; font-weight: 500;">{{ Auth::user()->name }}</div>
-            </div>
-            <div>
-                <div style="font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 6px;">Username</div>
-                <div style="font-size: 14px; color: #1e293b; font-weight: 500;">{{ Auth::user()->username }}</div>
-            </div>
-            <div>
-                <div style="font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 6px;">Email</div>
-                <div style="font-size: 14px; color: #1e293b; font-weight: 500;">{{ Auth::user()->email }}</div>
-            </div>
-            <div>
-                <div style="font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 6px;">Nomor Telepon</div>
-                <div style="font-size: 14px; color: #1e293b; font-weight: 500;">{{ Auth::user()->phone_number ?? '-' }}</div>
-            </div>
-            <div>
-                <div style="font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 6px;">Alamat</div>
-                <div style="font-size: 14px; color: #1e293b; font-weight: 500;">{{ Auth::user()->address ?? '-' }}</div>
-            </div>
-            <div>
-                <div style="font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 6px;">Jenis Kelamin</div>
-                <div style="font-size: 14px; color: #1e293b; font-weight: 500;">{{ Auth::user()->gender ? (Auth::user()->gender === 'male' ? 'Laki-laki' : 'Perempuan') : '-' }}</div>
+        <div class="hidden md:block">
+            <div class="text-right">
+                <div class="text-sm text-blue-100">{{ now()->format('l, d F Y') }}</div>
+                <div class="text-2xl font-bold mt-1">{{ now()->format('H:i') }}</div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Statistics Section 1 -->
-<div style="margin-bottom: 30px;">
-    <h2 style="font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 15px;">Statistik Data Kendaraan</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-        <!-- Card 1 -->
-        <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border-left: 4px solid #2563eb; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 16px rgba(37, 99, 235, 0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)'">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                <div style="font-size: 13px; font-weight: 600; color: #64748b;">Total Kendaraan</div>
-                <i class="fas fa-car" style="color: #2563eb; font-size: 18px;"></i>
+<!-- Stats Cards - Sistem Lama -->
+<div class="mb-6">
+    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+        <i class="fas fa-chart-bar text-blue-600"></i>
+        Statistik Sistem Existing
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Total Kendaraan -->
+        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-car text-blue-600 text-xl"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">Kendaraan</span>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-800 mb-1">{{ $totalKendaraan }}</h3>
+                <p class="text-sm text-gray-500">Total Kendaraan</p>
+                <div class="mt-3 flex items-center gap-2 text-xs">
+                    <span class="text-green-600 font-semibold">{{ $kendaraanAktif }} Aktif</span>
+                    <span class="text-gray-400">•</span>
+                    <span class="text-red-600 font-semibold">{{ $unitBreakdown }} Breakdown</span>
+                </div>
             </div>
-            <div style="font-size: 32px; font-weight: 700; color: #2563eb;">{{ $totalKendaraan }}</div>
-            <div style="font-size: 12px; color: #94a3b8; margin-top: 8px;">Semua unit</div>
+            <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-3">
+                <a href="{{ route('kendaraan.total') }}" class="text-white text-sm font-medium flex items-center justify-between hover:gap-3 transition-all duration-200">
+                    <span>Lihat Detail</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
         </div>
-        <!-- Card 2 -->
-        <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border-left: 4px solid #059669; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 16px rgba(5, 150, 105, 0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)'">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                <div style="font-size: 13px; font-weight: 600; color: #64748b;">Kendaraan Aktif</div>
-                <i class="fas fa-check-circle" style="color: #059669; font-size: 18px;"></i>
+
+        <!-- Total Mess -->
+        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-building text-purple-600 text-xl"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-purple-600 bg-purple-50 px-3 py-1 rounded-full">Mess</span>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-800 mb-1">{{ $totalMess }}</h3>
+                <p class="text-sm text-gray-500">Total Mess</p>
+                <div class="mt-3 flex items-center gap-2 text-xs">
+                    <span class="text-gray-600">Senior: {{ $messSenior }}</span>
+                    <span class="text-gray-400">•</span>
+                    <span class="text-gray-600">Junior: {{ $messJunior }}</span>
+                </div>
             </div>
-            <div style="font-size: 32px; font-weight: 700; color: #059669;">{{ $kendaraanAktif }}</div>
-            <div style="font-size: 12px; color: #94a3b8; margin-top: 8px;">Siap digunakan</div>
+            <div class="bg-gradient-to-r from-purple-500 to-purple-600 px-6 py-3">
+                <a href="{{ route('mess.senior') }}" class="text-white text-sm font-medium flex items-center justify-between hover:gap-3 transition-all duration-200">
+                    <span>Lihat Detail</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
         </div>
-        <!-- Card 3 -->
-        <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border-left: 4px solid #dc2626; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 16px rgba(220, 38, 38, 0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)'">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                <div style="font-size: 13px; font-weight: 600; color: #64748b;">Unit Breakdown</div>
-                <i class="fas fa-tools" style="color: #dc2626; font-size: 18px;"></i>
+
+        <!-- Total ATK -->
+        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-file-alt text-orange-600 text-xl"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-orange-600 bg-orange-50 px-3 py-1 rounded-full">ATK</span>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-800 mb-1">{{ $totalATK }}</h3>
+                <p class="text-sm text-gray-500">Total Items ATK</p>
+                <div class="mt-3 text-xs text-gray-500">
+                    Alat Tulis Kantor
+                </div>
             </div>
-            <div style="font-size: 32px; font-weight: 700; color: #dc2626;">{{ $unitBreakdown }}</div>
-            <div style="font-size: 12px; color: #94a3b8; margin-top: 8px;">Dalam perbaikan</div>
+            <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-3">
+                <a href="{{ route('atk.items') }}" class="text-white text-sm font-medium flex items-center justify-between hover:gap-3 transition-all duration-200">
+                    <span>Lihat Detail</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Total Inventaris Terpadu -->
+        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border-2 border-green-200">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-boxes text-green-600 text-xl"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">NEW</span>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-800 mb-1">{{ $totalInventaris }}</h3>
+                <p class="text-sm text-gray-500">Inventaris Terpadu</p>
+                <div class="mt-3 flex items-center gap-2 text-xs">
+                    <span class="text-green-600 font-semibold">{{ $inventarisBarangBaik }} Baik</span>
+                    <span class="text-gray-400">•</span>
+                    <span class="text-red-600 font-semibold">{{ $inventarisBarangRusak }} Rusak</span>
+                </div>
+            </div>
+            <div class="bg-gradient-to-r from-green-500 to-green-600 px-6 py-3">
+                <a href="{{ route('inventory.index') }}" class="text-white text-sm font-medium flex items-center justify-between hover:gap-3 transition-all duration-200">
+                    <span>Lihat Detail</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Statistics Section 2 -->
-<div>
-    <h2 style="font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 15px;">Statistik Data Mess</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-        <!-- Card 1 -->
-        <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border-left: 4px solid #7c3aed; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 16px rgba(124, 58, 237, 0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)'">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                <div style="font-size: 13px; font-weight: 600; color: #64748b;">Senior Staff</div>
-                <i class="fas fa-user-tie" style="color: #7c3aed; font-size: 18px;"></i>
+<!-- Inventaris Terpadu Section -->
+<div class="mb-6">
+    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+        <i class="fas fa-boxes text-green-600"></i>
+        Inventaris Terpadu - Overview
+    </h2>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Total Nilai -->
+        <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg p-6 text-white">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-money-bill-wave text-2xl"></i>
+                </div>
+                <i class="fas fa-chart-line text-3xl opacity-20"></i>
             </div>
-            <div style="font-size: 32px; font-weight: 700; color: #7c3aed;">{{ $messSenior }}</div>
-            <div style="font-size: 12px; color: #94a3b8; margin-top: 8px;">Penghuni aktif</div>
+            <h3 class="text-sm font-medium mb-2 opacity-90">Total Nilai Aset</h3>
+            <p class="text-3xl font-bold">Rp {{ number_format($totalNilaiInventaris ?? 0, 0, ',', '.') }}</p>
+            <div class="mt-4 pt-4 border-t border-white border-opacity-20">
+                <p class="text-sm opacity-75">{{ $totalInventaris }} item terdaftar</p>
+            </div>
         </div>
-        <!-- Card 2 -->
-        <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border-left: 4px solid #0891b2; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 16px rgba(8, 145, 178, 0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)'">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                <div style="font-size: 13px; font-weight: 600; color: #64748b;">Junior Staff</div>
-                <i class="fas fa-user" style="color: #0891b2; font-size: 18px;"></i>
-            </div>
-            <div style="font-size: 32px; font-weight: 700; color: #0891b2;">{{ $messJunior }}</div>
-            <div style="font-size: 12px; color: #94a3b8; margin-top: 8px;">Penghuni aktif</div>
+
+        <!-- Chart - By Kategori -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="text-sm font-semibold text-gray-700 mb-4">Distribusi per Kategori</h3>
+            @if($inventarisByKategori->count() > 0)
+                <canvas id="chartKategori" height="200"></canvas>
+            @else
+                <div class="flex items-center justify-center h-48">
+                    <div class="text-center">
+                        <i class="fas fa-chart-pie text-gray-300 text-4xl mb-3"></i>
+                        <p class="text-sm text-gray-500">Belum ada data</p>
+                    </div>
+                </div>
+            @endif
         </div>
-        <!-- Card 3 -->
-        <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border-left: 4px solid #f59e0b; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 16px rgba(245, 158, 11, 0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)'">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                <div style="font-size: 13px; font-weight: 600; color: #64748b;">Non Staff</div>
-                <i class="fas fa-users" style="color: #f59e0b; font-size: 18px;"></i>
-            </div>
-            <div style="font-size: 32px; font-weight: 700; color: #f59e0b;">{{ $messNonStaff }}</div>
-            <div style="font-size: 12px; color: #94a3b8; margin-top: 8px;">Penghuni aktif</div>
+
+        <!-- Chart - By Kondisi -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="text-sm font-semibold text-gray-700 mb-4">Status Kondisi</h3>
+            @if($inventarisByKondisi->count() > 0)
+                <canvas id="chartKondisi" height="200"></canvas>
+            @else
+                <div class="flex items-center justify-center h-48">
+                    <div class="text-center">
+                        <i class="fas fa-chart-pie text-gray-300 text-4xl mb-3"></i>
+                        <p class="text-sm text-gray-500">Belum ada data</p>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </div>
 
-<!-- Edit Profile Modal -->
-<div id="editProfileModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center; flex-direction: column;">
-    <div style="background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; animation: slideIn 0.3s ease;">
-        <!-- Modal Header -->
-        <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 24px; color: white; display: flex; justify-content: space-between; align-items: center; border-radius: 12px 12px 0 0;">
-            <h2 style="font-size: 18px; font-weight: 700; margin: 0;">Edit Profil</h2>
-            <button onclick="closeEditProfileModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
-                <i class="fas fa-times"></i>
-            </button>
+<!-- Recent Activities & Top Categories -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Recent Activities -->
+    <div class="bg-white rounded-xl shadow-sm">
+        <div class="p-6 border-b border-gray-200">
+            <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                <i class="fas fa-history text-blue-600"></i>
+                Aktivitas Terbaru
+            </h3>
         </div>
-
-        <!-- Modal Body -->
-        <div style="padding: 30px;">
-            <form method="POST" action="{{ route('profile.update') }}" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                @csrf
-                @method('PUT')
-
-                <div>
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">Nama</label>
-                    <input type="text" name="name" value="{{ Auth::user()->name }}" placeholder="Masukkan Nama" style="width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;" required>
+        <div class="p-6">
+            <div class="space-y-4">
+                @forelse($recentActivities as $activity)
+                <div class="flex items-start gap-4 pb-4 border-b border-gray-100 last:border-0">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                        @if($activity->action == 'create')
+                            <i class="fas fa-plus text-blue-600"></i>
+                        @elseif($activity->action == 'update')
+                            <i class="fas fa-edit text-green-600"></i>
+                        @elseif($activity->action == 'delete')
+                            <i class="fas fa-trash text-red-600"></i>
+                        @elseif($activity->action == 'export')
+                            <i class="fas fa-download text-purple-600"></i>
+                        @else
+                            <i class="fas fa-upload text-orange-600"></i>
+                        @endif
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-800">{{ $activity->description }}</p>
+                        <p class="text-xs text-gray-500 mt-1">
+                            {{ $activity->user->name ?? 'System' }} • {{ $activity->created_at->diffForHumans() }}
+                        </p>
+                    </div>
                 </div>
-
-                <div>
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">Username</label>
-                    <input type="text" name="username" value="{{ Auth::user()->username }}" placeholder="Masukkan Username" style="width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;" required>
+                @empty
+                <div class="text-center py-8">
+                    <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                    <p class="text-sm text-gray-500">Belum ada aktivitas</p>
                 </div>
+                @endforelse
+            </div>
+        </div>
+    </div>
 
-                <div>
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">Email</label>
-                    <input type="email" name="email" value="{{ Auth::user()->email }}" placeholder="Masukkan Email" style="width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;" required>
+    <!-- Top Categories by Value -->
+    <div class="bg-white rounded-xl shadow-sm">
+        <div class="p-6 border-b border-gray-200">
+            <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                <i class="fas fa-trophy text-yellow-500"></i>
+                Top Kategori (by Nilai)
+            </h3>
+        </div>
+        <div class="p-6">
+            <div class="space-y-4">
+                @forelse($topCategories as $index => $cat)
+                <div class="flex items-center gap-4">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm">
+                        {{ $index + 1 }}
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm font-semibold text-gray-800">{{ $cat->kategori->nama_kategori }}</span>
+                            <span class="text-sm font-bold text-green-600">Rp {{ number_format($cat->total_nilai, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full" style="width: {{ $totalNilaiInventaris > 0 ? ($cat->total_nilai / $totalNilaiInventaris) * 100 : 0 }}%"></div>
+                        </div>
+                    </div>
                 </div>
-
-                <div>
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">Nomor Telepon</label>
-                    <input type="text" name="phone_number" value="{{ Auth::user()->phone_number }}" placeholder="Masukkan Nomor Telepon" style="width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;">
+                @empty
+                <div class="text-center py-8">
+                    <i class="fas fa-box-open text-gray-300 text-4xl mb-3"></i>
+                    <p class="text-sm text-gray-500">Belum ada data</p>
                 </div>
-
-                <div>
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">Jenis Kelamin</label>
-                    <select name="gender" style="width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;">
-                        <option value="">Pilih Jenis Kelamin</option>
-                        <option value="male" {{ Auth::user()->gender === 'male' ? 'selected' : '' }}>Laki-laki</option>
-                        <option value="female" {{ Auth::user()->gender === 'female' ? 'selected' : '' }}>Perempuan</option>
-                    </select>
-                </div>
-
-                <div style="grid-column: 1 / -1;">
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">Alamat</label>
-                    <textarea name="address" placeholder="Masukkan Alamat" style="width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; resize: vertical; min-height: 80px;">{{ Auth::user()->address }}</textarea>
-                </div>
-
-                <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
-                    <button type="button" onclick="closeEditProfileModal()" style="padding: 10px 24px; background: white; color: #2563eb; border: 2px solid #2563eb; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f0f4f8'" onmouseout="this.style.backgroundColor='white'">
-                        Batal
-                    </button>
-                    <button type="submit" style="padding: 10px 24px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); display: flex; align-items: center; gap: 6px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(37, 99, 235, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(37, 99, 235, 0.3)'">
-                        <i class="fas fa-save"></i> Simpan
-                    </button>
-                </div>
-            </form>
+                @endforelse
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Change Password Modal -->
-<div id="changePasswordModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center; flex-direction: column;">
-    <div style="background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; animation: slideIn 0.3s ease;">
-        <!-- Modal Header -->
-        <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 24px; color: white; display: flex; justify-content: space-between; align-items: center; border-radius: 12px 12px 0 0;">
-            <h2 style="font-size: 18px; font-weight: 700; margin: 0;">Ubah Password</h2>
-            <button onclick="closeChangePasswordModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
-                <i class="fas fa-times"></i>
-            </button>
+<!-- Recent Inventories -->
+<div class="bg-white rounded-xl shadow-sm">
+    <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                <i class="fas fa-clock text-blue-600"></i>
+                Barang Terbaru Ditambahkan
+            </h3>
+            <a href="{{ route('inventory.index') }}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                Lihat Semua →
+            </a>
         </div>
-
-        <!-- Modal Body -->
-        <div style="padding: 30px;">
-            <form method="POST" action="{{ route('password.update') }}" style="display: grid; gap: 20px;">
-                @csrf
-                @method('PUT')
-
-                <div>
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">Password Lama</label>
-                    <input type="password" name="current_password" placeholder="Masukkan Password Lama" style="width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;" required>
-                </div>
-
-                <div>
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">Password Baru</label>
-                    <input type="password" name="password" placeholder="Masukkan Password Baru" style="width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;" required>
-                </div>
-
-                <div>
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">Konfirmasi Password</label>
-                    <input type="password" name="password_confirmation" placeholder="Konfirmasi Password Baru" style="width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;" required>
-                </div>
-
-                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
-                    <button type="button" onclick="closeChangePasswordModal()" style="padding: 10px 24px; background: white; color: #2563eb; border: 2px solid #2563eb; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f0f4f8'" onmouseout="this.style.backgroundColor='white'">
-                        Batal
-                    </button>
-                    <button type="submit" style="padding: 10px 24px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); display: flex; align-items: center; gap: 6px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(37, 99, 235, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(37, 99, 235, 0.3)'">
-                        <i class="fas fa-key"></i> Ubah Password
-                    </button>
-                </div>
-            </form>
-        </div>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-50">
+                <tr class="border-b border-gray-200">
+                    <th class="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider py-3 px-6">Kode</th>
+                    <th class="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider py-3 px-6">Nama Barang</th>
+                    <th class="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider py-3 px-6">Kategori</th>
+                    <th class="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider py-3 px-6">Lokasi</th>
+                    <th class="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider py-3 px-6">Kondisi</th>
+                    <th class="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider py-3 px-6">Total Nilai</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                @forelse($recentInventories as $item)
+                <tr class="hover:bg-gray-50 transition-colors duration-200">
+                    <td class="py-4 px-6 text-sm font-medium text-gray-800">{{ $item->kode_barang ?? '-' }}</td>
+                    <td class="py-4 px-6 text-sm font-semibold text-gray-800">{{ $item->nama_barang }}</td>
+                    <td class="py-4 px-6 text-sm text-gray-600">{{ $item->kategori->nama_kategori }}</td>
+                    <td class="py-4 px-6 text-sm text-gray-600">{{ $item->lokasi->nama_lokasi }}</td>
+                    <td class="py-4 px-6">
+                        @php
+                            $colors = [
+                                'success' => 'bg-green-100 text-green-800',
+                                'warning' => 'bg-yellow-100 text-yellow-800',
+                                'danger' => 'bg-red-100 text-red-800',
+                                'info' => 'bg-blue-100 text-blue-800',
+                            ];
+                            $colorClass = $colors[$item->kondisi->warna_label] ?? 'bg-gray-100 text-gray-800';
+                        @endphp
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium {{ $colorClass }}">
+                            {{ $item->kondisi->nama_kondisi }}
+                        </span>
+                    </td>
+                    <td class="py-4 px-6 text-sm font-bold text-green-600">Rp {{ number_format($item->total_nilai, 0, ',', '.') }}</td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="6" class="py-12 text-center">
+                        <i class="fas fa-box-open text-gray-300 text-4xl mb-3"></i>
+                        <p class="text-sm text-gray-500">Belum ada data inventaris</p>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
 
-<style>
-    @keyframes slideIn {
-        from {
-            transform: translateY(-50px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-</style>
-
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-function openEditProfileModal() {
-    const modal = document.getElementById('editProfileModal');
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-}
-
-function closeEditProfileModal() {
-    const modal = document.getElementById('editProfileModal');
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto';
-}
-
-function openChangePasswordModal() {
-    const modal = document.getElementById('changePasswordModal');
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-}
-
-function closeChangePasswordModal() {
-    const modal = document.getElementById('changePasswordModal');
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto';
-}
-
-// Close modals when clicking outside
 document.addEventListener('DOMContentLoaded', function() {
-    const editProfileModal = document.getElementById('editProfileModal');
-    const changePasswordModal = document.getElementById('changePasswordModal');
-
-    if (editProfileModal) {
-        editProfileModal.addEventListener('click', function(e) {
-            if (e.target === editProfileModal) {
-                closeEditProfileModal();
+    // Chart Kategori
+    const chartKategoriEl = document.getElementById('chartKategori');
+    if (chartKategoriEl) {
+        const ctxKategori = chartKategoriEl.getContext('2d');
+        new Chart(ctxKategori, {
+            type: 'doughnut',
+            data: {
+                labels: {!! json_encode($inventarisByKategori->pluck('kategori')) !!},
+                datasets: [{
+                    data: {!! json_encode($inventarisByKategori->pluck('total')) !!},
+                    backgroundColor: [
+                        '#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981', '#6B7280'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: { size: 11 }
+                        }
+                    }
+                }
             }
         });
     }
 
-    if (changePasswordModal) {
-        changePasswordModal.addEventListener('click', function(e) {
-            if (e.target === changePasswordModal) {
-                closeChangePasswordModal();
+    // Chart Kondisi
+    const chartKondisiEl = document.getElementById('chartKondisi');
+    if (chartKondisiEl) {
+        const ctxKondisi = chartKondisiEl.getContext('2d');
+        const kondisiData = {!! json_encode($inventarisByKondisi) !!};
+        const kondisiColors = {
+            'success': '#10B981',
+            'warning': '#F59E0B',
+            'danger': '#EF4444',
+            'info': '#3B82F6'
+        };
+        const kondisiBackgroundColors = kondisiData.map(item => kondisiColors[item.color] || '#6B7280');
+
+        new Chart(ctxKondisi, {
+            type: 'pie',
+            data: {
+                labels: kondisiData.map(item => item.kondisi),
+                datasets: [{
+                    data: kondisiData.map(item => item.total),
+                    backgroundColor: kondisiBackgroundColors,
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: { size: 11 }
+                        }
+                    }
+                }
             }
         });
-    }
-});
-
-// Close modals on Escape key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeEditProfileModal();
-        closeChangePasswordModal();
     }
 });
 </script>

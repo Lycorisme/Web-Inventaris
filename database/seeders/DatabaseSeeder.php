@@ -15,6 +15,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(UserSeeder::class);
+        // Urutan seeder penting! (Foreign key dependency)
+        $this->call([
+            CategorySeeder::class,    // 1. Kategori
+            LocationSeeder::class,    // 2. Lokasi
+            ConditionSeeder::class,   // 3. Kondisi
+            InventorySeeder::class,   // 4. Inventaris (terakhir karena depend on all)
+        ]);
     }
 }

@@ -1,65 +1,166 @@
 @extends('layouts.app')
 
-@section('title', 'Login')
-
 @section('content')
-<div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;">
-    <div style="width: 100%; max-width: 420px;">
-        <!-- Card -->
-        <div style="background: white; border-radius: 8px; box-shadow: 0 4px 20px rgba(37, 99, 235, 0.12); padding: 50px 40px;">
-            <!-- Logo -->
-            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 40px;">
-                <img src="{{ asset('images/logo-ck.jpg') }}" alt="Logo" style="height: 80px; width: auto; object-fit: contain;">
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full">
+        <!-- Logo dan Header -->
+        <div class="text-center mb-8">
+            <img src="{{ asset('images/logo-ck.jpg') }}" alt="Logo" class="h-20 mx-auto mb-6">
+            <h2 class="text-3xl font-bold text-gray-800">Welcome Back</h2>
+            <p class="mt-2 text-sm text-gray-600">Sign in to Database General Affair</p>
+        </div>
+
+        <!-- Login Card -->
+        <div class="bg-white rounded-2xl shadow-xl p-8">
+            @if (session('error'))
+            <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg flex items-center gap-2">
+                <i class="fas fa-exclamation-circle"></i>
+                <span class="text-sm">{{ session('error') }}</span>
             </div>
-
-            <!-- Title -->
-            <h1 style="text-align: center; font-size: 28px; font-weight: 700; color: #1e293b; margin-bottom: 10px;">Welcome Back</h1>
-            <p style="text-align: center; color: #64748b; font-size: 14px; margin-bottom: 30px;">Sign in to your account</p>
-
-            @if ($errors->any())
-                <div style="background-color: #fee2e2; border: 1px solid #fecaca; border-radius: 6px; padding: 12px 16px; margin-bottom: 20px;">
-                    <p style="color: #dc2626; font-size: 13px; font-weight: 600; margin: 0;">
-                        @foreach ($errors->all() as $error)
-                            {{ $error }}<br>
-                        @endforeach
-                    </p>
-                </div>
             @endif
 
-            <!-- Form -->
-            <form method="POST" action="{{ route('login.store') }}">
+            @if (session('success'))
+            <div class="mb-6 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg flex items-center gap-2">
+                <i class="fas fa-check-circle"></i>
+                <span class="text-sm">{{ session('success') }}</span>
+            </div>
+            @endif
+
+            <form method="POST" action="{{ route('login') }}" class="space-y-6">
                 @csrf
 
-                <!-- Username -->
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">Username</label>
-                    <div style="position: relative;">
-                        <i class="fas fa-user" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 14px;"></i>
-                        <input type="text" name="username" placeholder="Enter your username" value="{{ old('username') }}" style="width: 100%; padding: 12px 12px 12px 40px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; @if ($errors->has('username')) border-color: #dc2626; @endif" required>
+                <!-- Email -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                        Email Address
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-envelope text-gray-400"></i>
+                        </div>
+                        <input 
+                            id="email" 
+                            type="email" 
+                            name="email" 
+                            value="{{ old('email') }}" 
+                            required 
+                            autofocus
+                            class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('email') border-red-500 @enderror"
+                            placeholder="Enter your email"
+                        >
                     </div>
+                    @error('email')
+                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Password -->
-                <div style="margin-bottom: 30px;">
-                    <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155;">Password</label>
-                    <div style="position: relative;">
-                        <i class="fas fa-lock" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 14px;"></i>
-                        <input type="password" name="password" id="password" placeholder="Enter your password" style="width: 100%; padding: 12px 45px 12px 40px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;" required>
-                        <button type="button" onclick="togglePassword()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 14px; transition: color 0.3s ease;" onmouseover="this.style.color='#2563eb'" onmouseout="this.style.color='#94a3b8'">
-                            <i class="fas fa-eye" id="eyeIcon"></i>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                        Password
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <input 
+                            id="password" 
+                            type="password" 
+                            name="password" 
+                            required
+                            class="w-full pl-11 pr-12 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('password') border-red-500 @enderror"
+                            placeholder="Enter your password"
+                        >
+                        <button 
+                            type="button" 
+                            onclick="togglePassword()"
+                            class="absolute inset-y-0 right-0 pr-4 flex items-center"
+                        >
+                            <i id="toggleIcon" class="fas fa-eye text-gray-400 hover:text-gray-600"></i>
                         </button>
+                    </div>
+                    @error('password')
+                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input 
+                            id="remember" 
+                            name="remember" 
+                            type="checkbox"
+                            {{ old('remember') ? 'checked' : '' }}
+                            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        >
+                        <label for="remember" class="ml-2 text-sm text-gray-600">
+                            Remember me
+                        </label>
+                    </div>
+
+                    @if (Route::has('password.request'))
+                    <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                        Forgot password?
+                    </a>
+                    @endif
+                </div>
+
+                <!-- Submit Button -->
+                <button 
+                    type="submit"
+                    class="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2"
+                >
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Sign In</span>
+                </button>
+
+                <!-- Divider -->
+                <div class="relative my-6">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-4 bg-white text-gray-500">or continue with</span>
                     </div>
                 </div>
 
-                <!-- Login Button -->
-                <button type="submit" style="width: 100%; padding: 12px 24px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); margin-bottom: 15px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(37, 99, 235, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(37, 99, 235, 0.3)'">
-                    <i class="fas fa-sign-in-alt"></i> Sign In
-                </button>
+                <!-- Social Login (Optional) -->
+                <div class="grid grid-cols-2 gap-3">
+                    <button 
+                        type="button"
+                        class="w-full py-3 border border-gray-200 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center gap-2"
+                    >
+                        <i class="fab fa-google text-red-500"></i>
+                        <span>Google</span>
+                    </button>
+                    <button 
+                        type="button"
+                        class="w-full py-3 border border-gray-200 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center gap-2"
+                    >
+                        <i class="fab fa-microsoft text-blue-500"></i>
+                        <span>Microsoft</span>
+                    </button>
+                </div>
             </form>
 
-            <!-- Footer -->
-            <p style="text-align: center; font-size: 12px; color: #94a3b8; margin-top: 20px;">
-                Database General Affair © 2025 | PT. Cipto Kridatama
+            <!-- Register Link -->
+            @if (Route::has('register'))
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">
+                    Don't have an account? 
+                    <a href="{{ route('register') }}" class="text-blue-600 hover:text-blue-700 font-medium">
+                        Sign up
+                    </a>
+                </p>
+            </div>
+            @endif
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center">
+            <p class="text-sm text-gray-500">
+                &copy; {{ date('Y') }} Database General Affair. All rights reserved.
             </p>
         </div>
     </div>
@@ -68,15 +169,16 @@
 <script>
 function togglePassword() {
     const passwordInput = document.getElementById('password');
-    const eyeIcon = document.getElementById('eyeIcon');
+    const toggleIcon = document.getElementById('toggleIcon');
+    
     if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
-        eyeIcon.classList.remove('fa-eye');
-        eyeIcon.classList.add('fa-eye-slash');
+        toggleIcon.classList.remove('fa-eye');
+        toggleIcon.classList.add('fa-eye-slash');
     } else {
         passwordInput.type = 'password';
-        eyeIcon.classList.remove('fa-eye-slash');
-        eyeIcon.classList.add('fa-eye');
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.add('fa-eye');
     }
 }
 </script>

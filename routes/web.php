@@ -46,8 +46,11 @@ Route::post('/logout', function () {
     if (!Auth::check()) {
         return redirect('/login');
     }
-    return view('auth.logout-confirm');
-})->name('logout.confirm.post')->middleware('auth');
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/login')->with('success', 'You have been logged out successfully.');
+})->name('logout')->middleware('auth');
 
 Route::post('/logout-confirm', function () {
     if (!Auth::check()) {
@@ -62,10 +65,12 @@ Route::post('/logout-confirm', function () {
 // Data Kendaraan routes
 Route::middleware('auth')->group(function () {
     Route::get('/data/kendaraan/total', [\App\Http\Controllers\TotalKendaraanController::class, 'index'])->name('kendaraan.total');
-    Route::get('/data/kendaraan/total/{totalKendaraan}', [\App\Http\Controllers\TotalKendaraanController::class, 'show']);
+    Route::get('/data/kendaraan/total/create', [\App\Http\Controllers\TotalKendaraanController::class, 'create'])->name('kendaraan.create');
+    Route::get('/data/kendaraan/total/{totalKendaraan}', [\App\Http\Controllers\TotalKendaraanController::class, 'show'])->name('kendaraan.show');
+    Route::get('/data/kendaraan/total/{totalKendaraan}/edit', [\App\Http\Controllers\TotalKendaraanController::class, 'edit'])->name('kendaraan.edit');
     Route::post('/data/kendaraan/total', [\App\Http\Controllers\TotalKendaraanController::class, 'store'])->name('kendaraan.total.store');
     Route::put('/data/kendaraan/total/{totalKendaraan}', [\App\Http\Controllers\TotalKendaraanController::class, 'update'])->name('kendaraan.total.update');
-    Route::delete('/data/kendaraan/total/{totalKendaraan}', [\App\Http\Controllers\TotalKendaraanController::class, 'destroy'])->name('kendaraan.total.destroy');
+    Route::delete('/data/kendaraan/total/{totalKendaraan}', [\App\Http\Controllers\TotalKendaraanController::class, 'destroy'])->name('kendaraan.destroy');
     Route::get('/data/kendaraan/total/export/excel', [\App\Http\Controllers\TotalKendaraanController::class, 'export'])->name('kendaraan.total.export');
 });
 
@@ -151,6 +156,8 @@ Route::middleware('auth')->group(function () {
 
 // Profile routes
 Route::middleware('auth')->group(function () {
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'index'])->name('profile');
+    Route::get('/settings', [\App\Http\Controllers\ProfileController::class, 'settings'])->name('settings');
     Route::put('/profile/update', [\App\Http\Controllers\ProfileController::class, 'updateProfile'])->name('profile.update');
     Route::put('/password/update', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
 });
@@ -175,4 +182,13 @@ Route::middleware('auth')->group(function () {
 // Search route
 Route::middleware('auth')->group(function () {
     Route::get('/api/search', [\App\Http\Controllers\SearchController::class, 'search'])->name('search');
+});
+
+// Inventory routes (Sistem Inventaris Terpadu)
+Route::middleware('auth')->group(function () {
+    Route::get('/inventory/export', [\App\Http\Controllers\InventoryController::class, 'export'])->name('inventory.export');
+    Route::get('/inventory/import', [\App\Http\Controllers\InventoryController::class, 'importView'])->name('inventory.import');
+    Route::post('/inventory/import', [\App\Http\Controllers\InventoryController::class, 'import'])->name('inventory.import.process');
+    Route::get('/inventory/template', [\App\Http\Controllers\InventoryController::class, 'downloadTemplate'])->name('inventory.template');
+    Route::resource('inventory', \App\Http\Controllers\InventoryController::class);
 });
